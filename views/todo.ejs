@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<head>
+    <title>Todo App</title>
+    <link rel="stylesheet" href="/static/stylesheets/style.css" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Baloo+Bhai|Candal|Chewy&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css"integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+    <!-- <script>
+        const removeButtons = document.querySelectorAll('.remove');
+    
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async (event) => {
+                event.preventDefault();
+                const taskId = button.getAttribute('data-task-id');
+                try {
+                    const response = await fetch(`/${taskId}`, {
+                        method: 'DELETE'
+                    });
+                    if (response.ok) {
+                        // Optional: Update UI to reflect deletion
+                        button.closest('.todo-list-item').remove();
+                        console.log('Task deleted successfully');
+                    } else {
+                        console.error('Failed to delete task');
+                    }
+                } catch (error) {
+                    console.error('Error deleting task:', error);
+                }
+            });
+        });
+    </script> -->
+    
+</head>
+<body>
+    
+    <div class="todo-container">
+        <h2>To-Do List</h2>
+        <div class="todo">
+            <form action="/" method="POST" class="todo-header">
+                <input type="text" name="content" required>
+                <button type="submit">
+                    <span class="fas fa-plus">
+
+                    </span>
+                </button>
+            </form>
+            <ul class="todo-list">
+                <% tasks.forEach(task => { %>
+                    <li class="todo-list-item">
+                        <div class="todo-list-item-name"><%= task.content %></div>
+                        
+                        <a href="#" class="edit" data-task-id="<%= task._id %>">
+                            <span class="fas fa-edit"></span>
+                        </a>
+                        <a href="#" class="remove" data-task-id="<%= task._id %>">
+                            <span class="fas fa-times"></span>
+                        </a>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Deleting a task
+        document.querySelectorAll('.remove').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const taskId = button.getAttribute('data-task-id');
+        console.log('Deleting task with ID:', taskId); // Debug line
+        try {
+            const response = await fetch(`/tasks/${taskId}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                // Update the DOM
+                button.closest('.todo-list-item').remove();
+                console.log('Task deleted successfully');
+            } else {
+                console.error('Failed to delete task');
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+        }
+    });
+});
+
+        // Editing a task
+        document.querySelectorAll('.edit').forEach(button => {
+    button.addEventListener('click', async (event) => {
+        event.preventDefault();
+        const taskId = button.getAttribute('data-task-id');
+        console.log('Editing task with ID:', taskId); // Debug line
+        const newContent = prompt("Edit your task:", button.closest('.todo-list-item').querySelector('.todo-list-item-name').innerText);
+        if (newContent) {
+            try {
+                const response = await fetch(`/${taskId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content: newContent })
+                });
+                if (response.ok) {
+                    // Update the DOM
+                    button.closest('.todo-list-item').querySelector('.todo-list-item-name').innerText = newContent;
+                    console.log('Task edited successfully');
+                } else {
+                    console.error('Failed to edit task');
+                }
+            } catch (error) {
+                console.error('Error editing task:', error);
+            }
+        }
+    });
+});
+    </script>
+
+</body>
+</html>
